@@ -12,9 +12,14 @@ import javax.persistence.Id;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User {
+public class Info {
+
     @Id
     @GeneratedValue
-    @Column(name = "user_id")
+    @Column(name = "info_id")
     private Long id;
+
+    private int tree_plant;
+
+    private String content;
 }
