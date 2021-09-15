@@ -9,5 +9,4 @@ class EarthRangerApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

@@ -23,5 +23,4 @@ public class Tree {
     private User user;
 
     private int tree_level;
-
 }
