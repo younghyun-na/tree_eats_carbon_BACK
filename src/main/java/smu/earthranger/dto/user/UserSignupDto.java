@@ -1,4 +1,4 @@
-package smu.earthranger.dto;
+package smu.earthranger.dto.user;
 
 import lombok.*;
 
