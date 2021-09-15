@@ -1,15 +1,11 @@
 package smu.earthranger.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import smu.earthranger.dto.UserUpdateDto;
+import smu.earthranger.dto.user.UserUpdateDto;
 import smu.earthranger.service.UserService;
 
 import javax.validation.Valid;
