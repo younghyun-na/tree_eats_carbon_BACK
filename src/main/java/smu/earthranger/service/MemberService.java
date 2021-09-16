@@ -5,32 +5,32 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
-import smu.earthranger.dto.user.UserSignupDto;
+import smu.earthranger.dto.member.MemberSignupDto;
 import smu.earthranger.repository.FollowRepository;
 import smu.earthranger.repository.MemberRepository;
 
 @Service
 @Transactional(readOnly = true)
-public class UserService {
+public class MemberService {
     @Autowired
-    private MemberRepository userRepository;
+    private MemberRepository memberRepository;
     private FollowRepository followRepository;
 
     /**
      * 회원가입
      */
     @Transactional
-    public Member save(UserSignupDto userSignupDto) {
+    public Member save(MemberSignupDto memberSignupDto) {
 
         // 중복 회원 검증
-        if(userRepository.findUserByEmail(userSignupDto.getEmail()) != null)
+        if(memberRepository.findUserByEmail(memberSignupDto.getEmail()) != null)
             throw new IllegalStateException("이미 존재하는 회원입니다.");
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return userRepository.save(Member.builder()
-                .email(userSignupDto.getEmail())
-                .password(encoder.encode(userSignupDto.getPassword()))
-                .name(userSignupDto.getName())
+        return memberRepository.save(Member.builder()
+                .email(memberSignupDto.getEmail())
+                .password(encoder.encode(memberSignupDto.getPassword()))
+                .name(memberSignupDto.getName())
                 .build());
     }
 

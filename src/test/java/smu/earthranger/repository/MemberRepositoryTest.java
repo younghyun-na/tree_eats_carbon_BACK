@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserRepositoryTest {
+public class MemberRepositoryTest {
 
     @Autowired
-    private MemberRepository userRepository;
+    private MemberRepository memberRepository;
 
     private Member user;
 
@@ -28,16 +28,16 @@ public class UserRepositoryTest {
 
     @AfterEach
     public void tearDown() {
-        userRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Test
     public void findUserByEmail_성공() {
         //given
-        userRepository.save(user);
+        memberRepository.save(user);
 
         //when
-        Member result = userRepository.findUserByEmail("test@test");
+        Member result = memberRepository.findUserByEmail("test@test");
 
         //then
         assertThat(result.getEmail()).isEqualTo(user.getEmail());
