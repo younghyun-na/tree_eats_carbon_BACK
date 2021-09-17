@@ -9,19 +9,17 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-// 기본생성자 자동 추가 but 기본생성자의 접근권한을 protected로 제한
 public class Member extends BaseTimeEntity{
 
     @Id
     @GeneratedValue
     @Column(name = "member_id")
-    // 기본키 생성을 데이터베이스에 위임, AUTO_INCREMENT를 이용해 기본키 생성
     private Long id;
 
     @Column(nullable = false, length = 50, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30, unique = true)
     private String name;
 
     @Column(nullable = false)
@@ -52,6 +50,23 @@ public class Member extends BaseTimeEntity{
         this.name = name;
         this.password = password;
     }
+
+    //== 여기서 아예 팔로우 count 바꿀까..//
+    public void updateFollowCount(int followerCount, int followingCount){
+        this.followerCount = followerCount;
+        this.followingCount = followingCount;
+    }
+
+      /*
+         public void addFollower(User follower) {
+        followers.add(follower);
+        follower.following.add(this);
+       }
+
+    pub lic void addFollowing(User followed) {
+        followed.addFollower(this);
+    }
+         */
 
 
     public void updateTree(int treeLevel){
