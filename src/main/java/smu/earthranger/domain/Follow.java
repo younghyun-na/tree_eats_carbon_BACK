@@ -25,4 +25,11 @@ public class Follow {
     @JoinColumn(name = "member_to_id")
     private Member toMember;
 
+    /**
+     * @Builder
+     * public Follow(Member fromMember, Member toMember){
+     *      this.fromMember = fromMember;
+     *      this.toMember = toMember;
+     * }
+     */
 }

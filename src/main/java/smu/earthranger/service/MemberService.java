@@ -12,9 +12,12 @@ import smu.earthranger.repository.MemberRepository;
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
     private FollowRepository followRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     /**
      * 회원가입

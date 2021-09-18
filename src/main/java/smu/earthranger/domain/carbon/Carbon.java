@@ -1,9 +1,11 @@
-package smu.earthranger.domain;
+package smu.earthranger.domain.carbon;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import smu.earthranger.domain.BaseTimeEntity;
+import smu.earthranger.domain.Member;
 
 import javax.persistence.*;
 
@@ -33,4 +35,8 @@ public class Carbon extends BaseTimeEntity {
         this.distance = distance;
     }
 
+    @Builder
+    public Carbon( double distance) {
+        this.distance = distance;
+    }
 }

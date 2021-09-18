@@ -3,7 +3,7 @@ package smu.earthranger.dto.carbon;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import smu.earthranger.domain.Carbon;
+import smu.earthranger.domain.carbon.Carbon;
 import smu.earthranger.domain.Member;
 
 @Getter
