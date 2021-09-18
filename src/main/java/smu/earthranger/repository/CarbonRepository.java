@@ -1,12 +1,14 @@
 package smu.earthranger.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import smu.earthranger.domain.Carbon;
+import smu.earthranger.domain.Member;
+import smu.earthranger.domain.carbon.Carbon;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
 
 public interface CarbonRepository extends JpaRepository<Carbon, Long> {
 
-    Optional<Carbon> findByMemberIdAndCreatedDate(Long memberId, LocalDateTime now);
+    List<Carbon> findByMemberIdAndCreatedDate(Long memberId, LocalDate now);
+    List<Carbon> findByMember(Member member);
 }

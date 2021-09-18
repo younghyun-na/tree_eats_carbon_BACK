@@ -1,6 +1,7 @@
 package smu.earthranger.domain;
 
 import lombok.*;
+import smu.earthranger.domain.carbon.Carbon;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -26,8 +27,11 @@ public class Member extends BaseTimeEntity{
     private String password;
 
     private int treeLevel;
+    private int treeCount;
     private int followerCount;
     private int followingCount;
+
+    private double totalReduction;
 
     @OneToMany(mappedBy = "member")
     private List<Carbon> carbon = new ArrayList<>();
@@ -38,7 +42,7 @@ public class Member extends BaseTimeEntity{
     @OneToMany(mappedBy = "toMember")
     private List<Follow> followings = new ArrayList<>();
 
-    @Builder
+
     public Member(String email, String name, String password){
         this.email = email;
         this.name = name;
@@ -73,4 +77,20 @@ public class Member extends BaseTimeEntity{
         this.treeLevel = treeLevel;
     }
 
+    public void updateTreeCnt(int treeLevel){
+        this.treeLevel = treeLevel;
+        this.treeCount += 1;
+    }
+
+    public void updateTotal(double reduction){
+        this.totalReduction += reduction;
+    }
+
+    @Builder
+    private Member(String email, String name, String password, double totalReduction) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.totalReduction = totalReduction;
+    }
 }

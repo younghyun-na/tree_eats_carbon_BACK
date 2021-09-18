@@ -1,21 +1,25 @@
 package smu.earthranger.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import smu.earthranger.domain.Carbon;
+import smu.earthranger.domain.carbon.Carbon;
 import smu.earthranger.domain.Info;
+import smu.earthranger.domain.carbon.Co2;
+import smu.earthranger.domain.carbon.Level;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.carbon.CarbonRequestDto;
-import smu.earthranger.dto.carbon.CarbonRequestInfoDto;
+import smu.earthranger.dto.carbon.CarbonResponseInfoDto;
 import smu.earthranger.repository.CarbonRepository;
 import smu.earthranger.repository.InfoRepository;
 import smu.earthranger.repository.MemberRepository;
 
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,9 +28,6 @@ public class CarbonService {
     private final CarbonRepository carbonRepository;
     private final MemberRepository memberRepository;
     private final InfoRepository infoRepository;
-    private final double carCo2 = 145;
-    private final double subwayCo2 = 60;
-    private final double busCo2 =58;
 
 
     //탄소 발자국 계산 -> 일정 수준 넘어서면 레벨업
@@ -37,50 +38,67 @@ public class CarbonService {
         int transport = dto.getTransport();
 
         double result = calculateCarbon(distance, transport);
-        double reduction = distance * carCo2; //자동차를 탔다면 방출할 이산화탄소 - 실제 이산화 탄소
+        double carCo2 = distance * Co2.carCo2.getEmission(); //자동차를 탔다면 방출할 이산화탄소 - 실제 이산화 탄소
+        double reduction = carCo2 - result;
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new IllegalStateException("존재하지 않는 회원"));
 
+        member.updateTotal(reduction);
         Carbon carbon = dto.toEntity(member, result, reduction);
         Carbon savedCarbon = carbonRepository.save(carbon);
 
-        //저장 후 유저.누적 카본 가져옴 -> level up
+        //저장 후 유저.누적 카본 가져옴 -> level up 누적 감소량
+        levelUp(member.getTotalReduction(),member);
 
         return savedCarbon;
     }
 
-
-    public CarbonRequestInfoDto showInfo(long memberId){
-        long count = infoRepository.count();//DB에 저장된 정보 수
-
-        //랜덤 정보
-        Long randomId = Long.valueOf((long) Math.random() * count);
-        double treeCnt = 0;
-        Info info = infoRepository.findById(randomId)
-                .orElseThrow(IllegalAccessError::new);
+    public CarbonResponseInfoDto getInfo(long memberId){
+        Info info = getRandomInfo();
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new IllegalStateException("존재하지 않는 회원"));
 
-        //member의 방출량
-        treeCnt = getTreeCnt(memberId);
-
-        CarbonRequestInfoDto dto = CarbonRequestInfoDto.builder()
-                .info(info.getContent())
-                .tree(treeCnt)
-                .build();
+        String treeCnt = getTreeCnt(member);//오늘 방출량에 따른 필요한 나무 수
+        CarbonResponseInfoDto dto = getDto(treeCnt, info);
 
         return dto;
     }
 
-    private double getTreeCnt(long memberId) {
+    private Info getRandomInfo() {
+        long count = infoRepository.count();//DB에 저장된 정보 수
+
+        //랜덤 정보
+        long randomId = (int)(Math.random()*count) +1;
+        log.info("랜덤 아이디={}",randomId);
+
+        Info info = infoRepository.findById(randomId)
+                .orElseThrow(IllegalAccessError::new);
+        return info;
+    }
+
+    private CarbonResponseInfoDto getDto(String treeCnt, Info info) {
+        CarbonResponseInfoDto dto = CarbonResponseInfoDto.builder()
+                .info(info.getContent())
+                .tree(treeCnt)
+                .build();
+        return dto;
+    }
+
+    private String getTreeCnt(Member member) {
         double treeCnt;
-        LocalDateTime now = LocalDateTime.now();
-        Optional<Carbon> findCarbon = carbonRepository.findByMemberIdAndCreatedDate(memberId, now);
-        double emissionTone = gToT(findCarbon.get().getEmission());
-        treeCnt = emissionTone * 7.16;
-        return treeCnt;
+
+        List<Carbon> carbons = carbonRepository.findByMember(member); //전체 탄소 배출량 누적
+        //List<Carbon> carbons = carbonRepository.findByMemberIdAndCreatedDate(memberId, now);//하루 저장한 탄소 양
+
+        double sum = 0;
+        for (Carbon carbon : carbons) {
+            sum += gToT(carbon.getEmission());
+        }
+
+        treeCnt = sum * Co2.treeNum.getEmission();
+        return String.format("%.2f", treeCnt);
     }
 
     private double calculateCarbon(double distance, int transport) {
@@ -91,30 +109,25 @@ public class CarbonService {
         }
         //지하철
         else if(transport == 1) {
-            result = distance * subwayCo2;
+            result = distance * Co2.subwayCo2.getEmission();
         }
         //버스
         else if(transport == 2){
-            result = distance * busCo2;
+            result = distance * Co2.busCo2.getEmission();
         }
         return result;
     }
 
     private void levelUp(double reduction, Member member){
-        double lv1 = 10000;
-        double lv2 = 30000;
-        double lv3 = 50000;
-        double lv4 = 70000;
-        double lv5 = 90000;
-        if (reduction >= lv5)
-            member.updateTree(1);
-        else if (reduction >= lv4)
+        if (reduction >= Level.Lv5.level())
+            member.updateTreeCnt(1);
+        else if (reduction >= Level.Lv4.level())
             member.updateTree(5);
-        else if (reduction >= lv3)
+        else if (reduction >= Level.Lv3.level())
             member.updateTree(4);
-        else if (reduction >= lv2)
+        else if (reduction >= Level.Lv2.level())
             member.updateTree(3);
-        else if (reduction >= lv1)
+        else if (reduction >= Level.Lv1.level())
             member.updateTree(2);
     }
 
