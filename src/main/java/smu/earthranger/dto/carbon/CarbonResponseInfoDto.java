@@ -4,17 +4,18 @@ package smu.earthranger.dto.carbon;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @NoArgsConstructor
-public class CarbonRequestInfoDto {
+@ToString
+public class CarbonResponseInfoDto {
 
-    private double tree;
+    private String tree;
     private String info;
 
-
     @Builder
-    public CarbonRequestInfoDto(double tree, String info) {
+    public CarbonResponseInfoDto(String tree, String info) {
         this.tree = tree;
         this.info = info;
     }

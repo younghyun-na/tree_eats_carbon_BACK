@@ -1,4 +1,4 @@
-package smu.earthranger.dto.user;
+package smu.earthranger.dto.member;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
-public class UserSignupDto {
+public class MemberSignupDto {
 
     @Size(min = 1, max=50, message = "이메일은 2 ~ 50자여야 합니다.")
     @NotBlank(message = "이메일은 필수 항목입니다.")
