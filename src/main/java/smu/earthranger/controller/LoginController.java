@@ -1,31 +1,26 @@
 package smu.earthranger.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import smu.earthranger.dto.UserSignupDto;
-import smu.earthranger.service.UserService;
+import smu.earthranger.dto.member.MemberSignupDto;
+import smu.earthranger.service.MemberService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/member")
 public class LoginController {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     //회원가입
     @PostMapping("/signup")
-    public String signup(@Valid UserSignupDto userSignupDto, BindingResult bindingResult) {
-        userService.save(userSignupDto);
+    public String signup(@Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+        memberService.save(memberSignupDto);
         return "redirect:/login";
     }
 
