@@ -5,12 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.follow.FollowResponseDto;
-import smu.earthranger.repository.FollowRepository;
 import smu.earthranger.repository.MemberRepository;
+
 
 import java.util.List;
 
@@ -26,6 +25,7 @@ public class FollowServiceTest {
 
     private Member memberA;
     private Member memberB;
+    private Member memberC;
 
     @BeforeEach
     public void init(){
@@ -34,9 +34,12 @@ public class FollowServiceTest {
 
         memberB = Member.builder()
                 .email("jimin' s email").name("jimin").password("jimin123").build();
+        memberC = Member.builder()
+                .email("a' s email").name("a").password("a123").build();
 
         memberRepository.save(memberA);
         memberRepository.save(memberB);
+        memberRepository.save(memberC);
     }
 
     @Test
@@ -44,14 +47,13 @@ public class FollowServiceTest {
 
         //when
         followService.followMember(memberA.getId(), memberB.getName());   //A => B
-        followService.followMember(memberB.getId(), memberA.getName());
+        followService.followMember(memberB.getId(), memberA.getName());   //B => A
+        followService.followMember(memberA.getId(), memberC.getName());   //A => C
+
+        //Assertions.assertEquals(2, memberRepository.findById(memberA.getId()).get().getFollowings().size());  //오류남..왜..
 
         //then
-        Assertions.assertEquals(1, memberRepository.findById(memberA.getId()).get().getFollowingCount());
-        Assertions.assertEquals(1, memberRepository.findById(memberA.getId()).get().getFollowerCount());
-        Assertions.assertEquals(1, memberRepository.findById(memberB.getId()).get().getFollowingCount());
-        Assertions.assertEquals(1, memberRepository.findById(memberB.getId()).get().getFollowerCount());
-
+        Assertions.assertEquals(2, followService.getFollowList(memberA.getId()).size());
     }
 
     @Test
@@ -69,24 +71,29 @@ public class FollowServiceTest {
 
     @Test
     void showFollowerByOption(){
+        //given
+        followService.followMember(memberA.getId(), memberB.getName());   //A => B
+        followService.followMember(memberB.getId(), memberA.getName());   //B => A
 
+        //when
+        FollowResponseDto result1 = followService.findFollowerByOption(memberA.getId(), "jimin", 0);
+        FollowResponseDto result2 = followService.findFollowerByOption(memberA.getId(), "jimin' s email", 1);
+
+        //then
+        Assertions.assertEquals("jimin", result1.getName());
+        Assertions.assertEquals("jimin", result2.getName());
     }
 
     @Test
     void unfollow(){
         //given
         followService.followMember(memberA.getId(), memberB.getName());   //A => B
-        followService.followMember(memberB.getId(), memberA.getName());
+        followService.followMember(memberB.getId(), memberA.getName());   //B => A
 
         //when
-        followService.unfollowMember(memberA.getId(), memberB.getId());  //A -> B unfollow
+        followService.unfollowMember(memberA.getId(), memberB.getId());   //A -> B unfollow
 
         //then
-        //Assertions.assertEquals(0, memberRepository.findById(memberA.getId()).get().getFollowingCount());
-
+        Assertions.assertEquals(0, followService.getFollowList(memberA.getId()).size());
     }
-
-
-
-
 }

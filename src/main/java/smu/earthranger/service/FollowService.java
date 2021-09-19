@@ -10,8 +10,8 @@ import smu.earthranger.dto.follow.FollowResponseDto;
 import smu.earthranger.repository.FollowRepository;
 import smu.earthranger.repository.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -38,7 +38,7 @@ public class FollowService {
             throw new IllegalStateException("Follow rejected.");
         }
 
-        boolean isFollow = followRepository.findByFromMember_Id(fromId)
+        boolean isFollow = followRepository.findByFromMember(fromMember)
                 .stream()
                 .filter(s -> s.getToMember().getName().equals(toName))
                 .findFirst().isEmpty();
@@ -46,21 +46,15 @@ public class FollowService {
         if(!isFollow) throw new IllegalStateException("Already Followed.");
 
         //follow 객체 생성 후 DB에 저장
-        followRepository.save(FollowRequestDto.builder()
+        Follow follow = followRepository.save(FollowRequestDto.builder()
                 .fromMember(fromMember)
                 .toMember(toMember)
                 .build()
                 .toEntity());
-
-        //follower, following count 업데이트하기
-        int followingCount = followRepository.findByFromMember_Id(fromId).size();
-        int followerCount = followRepository.findByToMember_Id(toMember.getId()).size();
-
-        fromMember.updateFollowCount(followingCount, followerCount);
     }
 
     /**
-     * 이웃 삭제
+     * 이웃 삭제 : 팔로잉, 팔로우 카운트도 다시 업데이트
      */
     @Transactional
     public void unfollowMember(Long fromId, Long toId){
@@ -71,7 +65,6 @@ public class FollowService {
                 new IllegalStateException("Non exist member."));
 
         followRepository.deleteByFromMemberAndToMember(fromMem, toMem);
-
     }
 
     /**
@@ -84,12 +77,12 @@ public class FollowService {
         if(option == 0){
             Follow follow  = followRepository.findByFromMember_IdAndToMember_Name(id, optionValue).orElseThrow(() ->
                     new IllegalStateException("Non exist Member."));
-            followDto = getFollowResponseDto(follow);
+            followDto = FollowResponseDto.builder().follow(follow).build();
 
         }else if(option == 1){
             Follow follow = followRepository.findByFromMember_IdAndToMember_Email(id, optionValue).orElseThrow(() ->
                     new IllegalStateException("Non exist Member"));
-            followDto = getFollowResponseDto(follow);
+            followDto = FollowResponseDto.builder().follow(follow).build();
         }
         return followDto;
     }
@@ -100,28 +93,14 @@ public class FollowService {
 
     public List<FollowResponseDto> getFollowList(Long fromId){
 
-        List<Follow> followList = followRepository.findByFromMember_Id(fromId);
-        if(followList.isEmpty()){
-            throw new IllegalStateException("Follow list does not exist.");
-        }
-        
-        List<FollowResponseDto> followResponseList = new ArrayList<>();
+        Member member = memberRepository.findById(fromId).orElseThrow(() ->
+                new IllegalStateException("Non exist Member."));
 
-        for(Follow follow : followList){
-            FollowResponseDto dto = getFollowResponseDto(follow);
-            followResponseList.add(dto);
-        }
-        return followResponseList;
-    }
+        List<Follow> followList = followRepository.findByFromMember(member);
 
-    private FollowResponseDto getFollowResponseDto(Follow follow){
-        Member member = follow.getToMember();
-
-        return FollowResponseDto.builder()
-                .name(member.getName())
-                .followingCount(member.getFollowingCount())
-                .followerCount(member.getFollowerCount())
-                .build();
+        return followList.stream()
+                .map(FollowResponseDto::new)
+                .collect(Collectors.toList());
     }
 
 }

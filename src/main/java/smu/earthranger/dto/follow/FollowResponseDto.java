@@ -2,6 +2,7 @@ package smu.earthranger.dto.follow;
 
 import lombok.*;
 import smu.earthranger.domain.Follow;
+import smu.earthranger.domain.Member;
 
 @Getter
 @NoArgsConstructor
@@ -12,10 +13,12 @@ public class FollowResponseDto {
     private int followingCount;
 
     @Builder
-    public FollowResponseDto(String name, int followerCount, int followingCount){
-        this.name = name;
-        this.followerCount = followerCount;
-        this.followingCount = followingCount;
+    public FollowResponseDto(Follow follow){
+        Member toMem = follow.getToMember();
+
+        this.name = toMem.getName();
+        this.followerCount = toMem.getFollowers().size();
+        this.followingCount = toMem.getFollowings().size();
     }
 
 }

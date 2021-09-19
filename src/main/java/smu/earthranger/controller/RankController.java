@@ -22,7 +22,6 @@ public class RankController {
     private final RankService rankService;
     private Long userId = 1L; //임시
 
-
     @GetMapping
     public ResponseEntity<?> getRank(@RequestParam(defaultValue = "all") String user,
                                      @PageableDefault(size = 20, sort = "totalReduction", direction = Sort.Direction.DESC) Pageable pageable){
