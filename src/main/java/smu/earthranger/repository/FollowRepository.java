@@ -1,5 +1,6 @@
 package smu.earthranger.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,11 +18,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     Optional<Follow> findByFromMember_IdAndToMember_Email(Long id, String email);
 
-    List<Follow> findByFromMember_Id(Long id);
+    List<Follow> findByFromMember(Member member);
 
-    List<Follow> findByToMember_Id(Long id);
+    Page<Member> findFollowByFromMember(Member member);
 
     @Transactional
     void deleteByFromMemberAndToMember(Member fromMember, Member toMember);
-
 }

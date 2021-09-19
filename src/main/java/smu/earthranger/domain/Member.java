@@ -1,6 +1,7 @@
 package smu.earthranger.domain;
 
 import lombok.*;
+import smu.earthranger.domain.carbon.Carbon;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -26,24 +27,21 @@ public class Member extends BaseTimeEntity{
     private String password;
 
     private int treeLevel;
-    private int followerCount;
-    private int followingCount;
+
+    private int treeCount;
+
+    private double totalReduction;
 
     @OneToMany(mappedBy = "member")
     private List<Carbon> carbon = new ArrayList<>();
 
-    @OneToMany(mappedBy = "fromMember")
-    private List<Follow> followers = new ArrayList<>();
-
-    @OneToMany(mappedBy = "toMember")
+    @OneToMany(mappedBy = "fromMember", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followings = new ArrayList<>();
 
-    @Builder
-    public Member(String email, String name, String password){
-        this.email = email;
-        this.name = name;
-        this.password = password;
-    }
+    @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followers = new ArrayList<>();
+
+    //==업데이트 메서드==//
 
     public void update(String email, String name,String password) {
         this.email = email;
@@ -51,26 +49,25 @@ public class Member extends BaseTimeEntity{
         this.password = password;
     }
 
-    //== 여기서 아예 팔로우 count 바꿀까..//
-    public void updateFollowCount(int followerCount, int followingCount){
-        this.followerCount = followerCount;
-        this.followingCount = followingCount;
-    }
-
-      /*
-         public void addFollower(User follower) {
-        followers.add(follower);
-        follower.following.add(this);
-       }
-
-    pub lic void addFollowing(User followed) {
-        followed.addFollower(this);
-    }
-         */
-
-
     public void updateTree(int treeLevel){
         this.treeLevel = treeLevel;
     }
 
+
+    public void updateTreeCnt(int treeLevel){
+        this.treeLevel = treeLevel;
+        this.treeCount += 1;
+    }
+
+    public void updateTotal(double reduction){
+        this.totalReduction += reduction;
+    }
+
+    @Builder
+    private Member(String email, String name, String password, double totalReduction) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.totalReduction = totalReduction;
+    }
 }
