@@ -9,62 +9,52 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
-import smu.earthranger.domain.Info;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.carbon.CarbonRequestDto;
-import smu.earthranger.dto.carbon.CarbonResponseInfoDto;
 import smu.earthranger.dto.user.MemberRankingResponseDto;
-import smu.earthranger.repository.InfoRepository;
 import smu.earthranger.repository.MemberRepository;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
-class CarbonServiceTest {
+class RankServiceTest {
 
-    @Autowired CarbonService carbonService;
-    @Autowired InfoRepository infoRepository;
-    @Autowired MemberRepository memberRepository;
     @Autowired RankService rankService;
+    @Autowired
+    MemberRepository memberRepository;
+    @Autowired
+    CarbonService carbonService;
+    @Autowired
+    FollowService followService;
 
     @Test
-    public void saveCarbon() throws Exception{
+    public void showRank() throws Exception{
         //given
-        
-        //when
-        //then
-    }
+        CarbonRequestDto carbon1 = getCarbon(1, 123.2);
+        CarbonRequestDto carbon2 = getCarbon(1, 233.2);
+        CarbonRequestDto carbon3 = getCarbon(2, 34444.1);
 
-    //카본 -> 오늘의 방출량,
-    @Test
-    @Rollback(value = false)
-    public void getInfo() throws Exception{
-        //given
-        for (int i = 1; i < 11; i++) {
-            Info build = Info.builder()
-                    .content("일단 테스트용" + i).build();
-            infoRepository.save(build);
-        }
+//        Member member = getMember("tg1","jm11@test.com","dkdkkdk23",0);
+//        Member member2 = getMember("df1e","dum1@test.com","ff2",0);
+//        Member member3 = getMember("zz1z","se1@test.com","fdfdff2",0);
+//        Member save = memberRepository.save(member);
+//        Member save1 = memberRepository.save(member2);
+//        Member save2 = memberRepository.save(member3);
 
-        CarbonRequestDto carbon1 = getCarbon(1, 234.3);
-        CarbonRequestDto carbon2 = getCarbon(2, 244.3);
-        CarbonRequestDto carbon3 = getCarbon(2, 244.3);
+        carbonService.saveCarbon(2L,carbon1);
+        carbonService.saveCarbon(2L,carbon2);
+        carbonService.saveCarbon(2L,carbon3);
 
+        Pageable pageable = PageRequest.of(0, 20, Sort.by( Sort.Direction.DESC,"totalReduction"));
+//        followService.followMember(member.getId(),member2.getName()); //member -> member2 팔로우
+//
+//        Page<MemberRankingResponseDto> follow = rankService.getByPermission(member.getId(), "follow", pageable);
 
-        Member member = getMember("te212t","tgkfe2@test.com","dkdkkdk23",0);
-        Member member2 = getMember("te221t2","tq12@test.com","ff2",0);
-        Member save = memberRepository.save(member);
-        memberRepository.save(member2);
-
-        carbonService.saveCarbon(save.getId(),carbon1);
-        carbonService.saveCarbon(save.getId(),carbon2);
-        carbonService.saveCarbon(save.getId(),carbon3);
-
-        //when
-        CarbonResponseInfoDto info = carbonService.getInfo(save.getId());
-
-        //then
-        System.out.println(info);
+//        for (MemberRankingResponseDto following : follow) {
+//            System.out.println(following);
+//        }
 
     }
 
@@ -117,4 +107,5 @@ class CarbonServiceTest {
         }
 
     }
+
 }
