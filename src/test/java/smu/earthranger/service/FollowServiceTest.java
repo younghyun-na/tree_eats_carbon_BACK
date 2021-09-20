@@ -46,9 +46,9 @@ public class FollowServiceTest {
     public void follow(){
 
         //when
-        followService.followMember(memberA.getId(), memberB.getName());   //A => B
-        followService.followMember(memberB.getId(), memberA.getName());   //B => A
-        followService.followMember(memberA.getId(), memberC.getName());   //A => C
+        followService.followMember(memberA.getId(), memberB.getId());   //A => B
+        followService.followMember(memberB.getId(), memberA.getId());   //B => A
+        followService.followMember(memberA.getId(), memberC.getId());   //A => C
 
         //Assertions.assertEquals(2, memberRepository.findById(memberA.getId()).get().getFollowings().size());  //오류남..왜..
 
@@ -59,8 +59,8 @@ public class FollowServiceTest {
     @Test
     void showFollowList(){
         //given
-        followService.followMember(memberA.getId(), memberB.getName());   //A => B
-        followService.followMember(memberB.getId(), memberA.getName());   //B => A
+        followService.followMember(memberA.getId(), memberB.getId());   //A => B
+        followService.followMember(memberB.getId(), memberA.getId());   //B => A
 
         //when
         List<FollowResponseDto> followList = followService.getFollowList(memberA.getId());
@@ -72,12 +72,12 @@ public class FollowServiceTest {
     @Test
     void showFollowerByOption(){
         //given
-        followService.followMember(memberA.getId(), memberB.getName());   //A => B
-        followService.followMember(memberB.getId(), memberA.getName());   //B => A
+        followService.followMember(memberA.getId(), memberB.getId());   //A => B
+        followService.followMember(memberB.getId(), memberA.getId());   //B => A
 
         //when
-        FollowResponseDto result1 = followService.findFollowerByOption(memberA.getId(), "jimin", 0);
-        FollowResponseDto result2 = followService.findFollowerByOption(memberA.getId(), "jimin' s email", 1);
+        FollowResponseDto result1 = followService.findFollowerByOption(memberA.getId(),0, "jimin");
+        FollowResponseDto result2 = followService.findFollowerByOption(memberA.getId(), 1,"jimin' s email");
 
         //then
         Assertions.assertEquals("jimin", result1.getName());
@@ -87,8 +87,8 @@ public class FollowServiceTest {
     @Test
     void unfollow(){
         //given
-        followService.followMember(memberA.getId(), memberB.getName());   //A => B
-        followService.followMember(memberB.getId(), memberA.getName());   //B => A
+        followService.followMember(memberA.getId(), memberB.getId());   //A => B
+        followService.followMember(memberB.getId(), memberA.getId());   //B => A
 
         //when
         followService.unfollowMember(memberA.getId(), memberB.getId());   //A -> B unfollow
