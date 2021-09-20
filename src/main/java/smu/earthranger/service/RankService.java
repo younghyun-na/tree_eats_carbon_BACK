@@ -1,19 +1,17 @@
 package smu.earthranger.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import smu.earthranger.domain.Follow;
 import smu.earthranger.domain.Member;
-import smu.earthranger.dto.follow.FollowResponseDto;
 import smu.earthranger.dto.user.MemberRankingResponseDto;
 import smu.earthranger.repository.FollowRepository;
 import smu.earthranger.repository.MemberRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,43 +23,39 @@ public class RankService {
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
 
-    public List<MemberRankingResponseDto> getByPermission(Long memberId,String user, Pageable pageable){
+    public Page<MemberRankingResponseDto> getByPermission(Long memberId, String user, Pageable pageable){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new IllegalStateException("존재하지 않는 회원"));
 
-        List<MemberRankingResponseDto> list = notFoundMembers();
-
-        if(user.equals("all")) {
-            return getAllMember(pageable);
-        }
-        else if(user.equals("follow")){
+       if(user.equals("follow")){
             return getFollowMember(pageable,member);
         }
 
-        return list;
+        return getAllMember(pageable);
 
     }
 
-    private List<MemberRankingResponseDto> notFoundMembers() {
-        List<MemberRankingResponseDto> list = new ArrayList<>();
-        MemberRankingResponseDto dto = null;
-        list.add(dto);
-        return list;
-    }
-
-    private List<MemberRankingResponseDto> getAllMember(Pageable pageable) {
+    private Page<MemberRankingResponseDto> getAllMember(Pageable pageable) {
         Page<Member> sorted = memberRepository.findAll(pageable);
 
-        return sorted.stream()
-                .map(MemberRankingResponseDto::new)
-                .collect(Collectors.toList());
+        return sorted
+                .map(MemberRankingResponseDto::new);
     }
 
-    private List<MemberRankingResponseDto> getFollowMember(Pageable pageable, Member member) {
-        Page<Member> sorted = followRepository.findFollowByFromMember(member);
+    private Page<MemberRankingResponseDto> getFollowMember(Pageable pageable, Member member) {
+        List<Follow> sorted = followRepository.findFollowByFromMember(member);
+        List<Member> members = new ArrayList<>();
+        for (Follow follow : sorted) {
+            members.add(follow.getToMember());
+        }
 
-        return sorted.stream()
-                .map(MemberRankingResponseDto::new)
-                .collect(Collectors.toList());
+        //list -> page
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), members.size());
+        final Page<Member> page = new PageImpl<>(members.subList(start, end), pageable, members.size());
+
+        return page
+                .map(MemberRankingResponseDto::new);
     }
+
 }

@@ -26,11 +26,11 @@ public class FollowService {
      * 이웃 추가
      */
     @Transactional
-    public void followMember(Long fromId, String toName){
+    public void followMember(Long fromId, Long toId){
         Member fromMember = memberRepository.findById(fromId).orElseThrow(() ->
                 new IllegalStateException("Non exist member."));
 
-        Member toMember = memberRepository.findUserByName(toName).orElseThrow(() ->
+        Member toMember = memberRepository.findById(toId).orElseThrow(() ->
                 new IllegalStateException("Non exist member."));
 
 
@@ -40,13 +40,13 @@ public class FollowService {
 
         boolean isFollow = followRepository.findByFromMember(fromMember)
                 .stream()
-                .filter(s -> s.getToMember().getName().equals(toName))
+                .filter(s -> s.getToMember().getId().equals(toId))
                 .findFirst().isEmpty();
 
         if(!isFollow) throw new IllegalStateException("Already Followed.");
 
         //follow 객체 생성 후 DB에 저장
-        Follow follow = followRepository.save(FollowRequestDto.builder()
+        followRepository.save(FollowRequestDto.builder()
                 .fromMember(fromMember)
                 .toMember(toMember)
                 .build()
@@ -69,8 +69,10 @@ public class FollowService {
 
     /**
      * 이웃 검색_이름 :0, 이메일 :1 : Follow 대상
+     * 방법 1 : 옵션으로 구분
+     * 방법 2 : 쿼리로 name, email 받아서 컨트롤러에서 따로 처리
      */
-    public FollowResponseDto findFollowerByOption(Long id, String optionValue, int option){
+    public FollowResponseDto findFollowerByOption(Long id, int option, String optionValue){
 
         FollowResponseDto followDto = null;
 

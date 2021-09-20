@@ -16,7 +16,6 @@ import smu.earthranger.repository.InfoRepository;
 import smu.earthranger.repository.MemberRepository;
 
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -29,7 +28,6 @@ public class CarbonService {
     private final MemberRepository memberRepository;
     private final InfoRepository infoRepository;
 
-
     //탄소 발자국 계산 -> 일정 수준 넘어서면 레벨업
     @Transactional
     public Carbon saveCarbon(Long memberId,CarbonRequestDto dto){
@@ -39,6 +37,8 @@ public class CarbonService {
 
         double result = calculateCarbon(distance, transport);
         double carCo2 = distance * Co2.carCo2.getEmission(); //자동차를 탔다면 방출할 이산화탄소 - 실제 이산화 탄소
+        carCo2 = Math.round(carCo2*100)/100.0;
+
         double reduction = carCo2 - result;
 
         Member member = memberRepository.findById(memberId)
@@ -115,7 +115,7 @@ public class CarbonService {
         else if(transport == 2){
             result = distance * Co2.busCo2.getEmission();
         }
-        return result;
+        return Math.round(result*100)/100.0;
     }
 
     private void levelUp(double reduction, Member member){
