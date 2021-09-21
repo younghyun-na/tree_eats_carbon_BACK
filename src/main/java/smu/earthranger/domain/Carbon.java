@@ -18,7 +18,7 @@ public class Carbon extends BaseTimeEntity {
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Member member;
 
     private double emission;
     private double distance;
