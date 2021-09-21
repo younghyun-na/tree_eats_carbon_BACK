@@ -15,6 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import smu.earthranger.service.MemberService;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -27,6 +31,22 @@ public class LoginController {
     public String signup(@Valid UserSignupDto userSignupDto, BindingResult bindingResult) {
         userService.save(userSignupDto);
         return "redirect:/login";
+
+    // 회원 가입 페이지로 이동
+    @GetMapping("/signup")
+    public String signup() {
+        return "/signup";
     }
 
+    // 로그인 페이지로 이동
+    @GetMapping("/login")
+    public String login() {
+        return "/login";
+    }
+
+    // 회원 정보 수정 페이지로 이동
+    @GetMapping("/update")
+    public String update() {
+        return "/update";
+    }
 }
