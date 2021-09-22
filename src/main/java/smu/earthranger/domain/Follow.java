@@ -18,11 +18,11 @@ public class Follow {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "from_user_id")
-    private Member from_member;
+    @JoinColumn(name = "member_from_id")
+    private Member fromMember;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "to_user_id")
-    private Member to_member;
+    @JoinColumn(name = "member_to_id")
+    private Member toMember;
 
 }
