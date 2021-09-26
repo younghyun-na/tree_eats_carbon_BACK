@@ -31,8 +31,8 @@ public class LoginController {
     }
 
     // 회원 정보 수정 페이지로 이동
-    @GetMapping("/update")
+    @GetMapping("member/update")
     public String update() {
-        return "/update";
+        return "member/update";
     }
 }

@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Data
-public class MemberDetails implements UserDetails, OAuth2User {
+public class MemberDetails implements UserDetails, OAuth2User{
 
     private Member member;
     private Map<String, Object> attributes;

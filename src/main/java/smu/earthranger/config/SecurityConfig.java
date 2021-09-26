@@ -20,21 +20,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("member/login", "member/signup").permitAll()
+                .antMatchers("/login", "/signup").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("member/login")
-                .permitAll()
+                .loginPage("/login")
+                .loginProcessingUrl("/loginForm")
                 .defaultSuccessUrl("/")
                 .and()
                 .logout()
-                .logoutSuccessUrl("member/login")
+                .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
                 .and()
                 .oauth2Login()   // oauth2Login에 대한 설정 시작
-                .loginPage("member/login")
+                .loginPage("/login")
                 .userInfoEndpoint()    // oauth2Login 성공 이후의 설정을 시작
                 .userService(oauth2DetailsService)  //oauth2DetailsService에서 처리하겠다.
         ;

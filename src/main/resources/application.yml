@@ -4,6 +4,8 @@ spring:
     url: jdbc:mysql://localhost:3306/tree?serverTimezone=UTC&characterEncoding=UTF-8
     username: earth
     password: 1234
+  main:
+    web-application-type: NONE
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -27,5 +29,6 @@ spring:
       client:
         registration:
           google:
-            client-id: 582412274619-ma6ciduicasc4jggckl2el4lme3h0k9g.apps.googleusercontent.com
-            scope: email, profile
+            client-id: 344247841656-eoh3354438m44ap1bre5q1lnoa08hndj.apps.googleusercontent.com
+            client-secret: Vpct4VRO5TPT0nLIcEQK_nSB
+            scope: email, name
