@@ -28,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 
 public class MemberService {
+
     @Autowired
     private MemberRepository memberRepository;
 

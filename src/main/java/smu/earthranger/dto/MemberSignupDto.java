@@ -1,5 +1,6 @@
 package smu.earthranger.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import smu.earthranger.domain.Member;
 
@@ -25,4 +26,7 @@ public class MemberSignupDto {
     @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
     @NotBlank(message = "비밀번호는 필수 항목입니다.")
     private String password;
+
+    public MemberSignupDto() {
+    }
 }
