@@ -1,12 +1,11 @@
 package smu.earthranger.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+@Builder
 @AllArgsConstructor
 @Data
 public class MemberUpdateDto {

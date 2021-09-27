@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Data
-public class MemberDetails implements UserDetails, OAuth2User{
+public class MemberDetails implements UserDetails{
 
     private Member member;
     private Map<String, Object> attributes;
@@ -25,10 +25,12 @@ public class MemberDetails implements UserDetails, OAuth2User{
 
     public void updateMember(Member member) { this.member = member; }
 
+    /**
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
     }
+    **/
 
     // 해당 유저의 권한 목록
     @Override
@@ -70,8 +72,10 @@ public class MemberDetails implements UserDetails, OAuth2User{
         return true;
     }
 
+    /**
     @Override
     public String getName() {
         return (String) attributes.get("name");
     }
+    **/
 }

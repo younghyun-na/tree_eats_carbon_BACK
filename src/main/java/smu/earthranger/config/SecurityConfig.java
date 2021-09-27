@@ -1,49 +1,56 @@
 package smu.earthranger.config;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import smu.earthranger.config.auth.MemberDetailsService;
-import smu.earthranger.config.oauth.Oauth2DetailsService;
+import smu.earthranger.service.MemberService;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final MemberDetailsService memberDetailsService;
-    private final Oauth2DetailsService oauth2DetailsService;
+    //private final Oauth2DetailsService oauth2DetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.authorizeRequests()
-                .antMatchers("/login", "/signup").permitAll()
+        http
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/login","/signup").permitAll()//전체 열람
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .loginProcessingUrl("/loginForm")
                 .defaultSuccessUrl("/")
                 .and()
                 .logout()
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
-                .and()
-                .oauth2Login()   // oauth2Login에 대한 설정 시작
-                .loginPage("/login")
-                .userInfoEndpoint()    // oauth2Login 성공 이후의 설정을 시작
-                .userService(oauth2DetailsService)  //oauth2DetailsService에서 처리하겠다.
         ;
     }
 
+
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // 로그인 처리를 하기 위한 AuthenticationManagerBuilder를 설정
         auth.userDetailsService(memberDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
+
 }
 

@@ -1,5 +1,6 @@
 package smu.earthranger.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import smu.earthranger.config.ResponseMessage;
@@ -27,18 +29,11 @@ public class MemberController {
 
     private final MemberService memberService;
 
-
     //회원가입
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
         memberService.save(memberSignupDto);
         return ResponseEntity.ok(new ResponseMessage(HttpStatus.CREATED, "Registered successfully!"));
-    }
-
-    //로그인 화면으로 이동
-    @GetMapping("/login")
-    public String login() {
-        return "/login";
     }
 
     // 회원 정보 수정
@@ -57,27 +52,26 @@ public class MemberController {
 
 
     /**
-    //회원가입
-    @PostMapping("/signup")
-    public String signup(@Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
-        memberService.save(memberSignupDto);
-        return "redirect:/";
-    }
+     //회원가입
+     @PostMapping("/signup")
+     public String signup(@Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+     memberService.save(memberSignupDto);
+     return "redirect:/";
+     }
 
-    // 회원 정보 수정
-    @PutMapping("/member/update")
-    public String update(@Valid MemberUpdateDto memberUpdateDto, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal MemberDetails memberDetails) {
-        memberService.update(memberUpdateDto,memberDetails);
-        redirectAttributes.addAttribute("id", memberDetails.getMember().getId());
-        return "redirect:/";
-    }
+     // 회원 정보 수정
+     @PutMapping("/member/update")
+     public String update(@Valid MemberUpdateDto memberUpdateDto, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal MemberDetails memberDetails) {
+     memberService.update(memberUpdateDto,memberDetails);
+     redirectAttributes.addAttribute("id", memberDetails.getMember().getId());
+     return "redirect:/";
+     }
 
-    //로그아웃
-    @GetMapping(value = "/logout")
-    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/";
-    }
-    **/
-
+     //로그아웃
+     @GetMapping(value = "/logout")
+     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+     new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+     return "redirect:/";
+     }
+     **/
 }

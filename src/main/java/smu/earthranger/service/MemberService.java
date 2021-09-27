@@ -1,6 +1,12 @@
 package smu.earthranger.service;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import smu.earthranger.config.auth.MemberDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +19,10 @@ import smu.earthranger.dto.MemberUpdateDto;
 import smu.earthranger.handler.CustomValidationException;
 import smu.earthranger.repository.MemberRepository;
 
+import javax.management.relation.Role;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +43,8 @@ public class MemberService {
 
         return memberRepository.save(Member.builder()
                 .email(memberSignupDto.getEmail())
-                .password(encoder.encode(memberSignupDto.getPassword()))
                 .name(memberSignupDto.getName())
+                .password(encoder.encode(memberSignupDto.getPassword()))
                 .build());
     }
 

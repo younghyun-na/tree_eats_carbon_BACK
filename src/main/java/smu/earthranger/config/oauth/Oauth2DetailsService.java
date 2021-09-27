@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Map;
 import java.util.UUID;
-
+/**
 @RequiredArgsConstructor
 @Service
 public class Oauth2DetailsService extends DefaultOAuth2UserService{
@@ -41,4 +41,4 @@ public class Oauth2DetailsService extends DefaultOAuth2UserService{
         }
     }
 }
-
+**/

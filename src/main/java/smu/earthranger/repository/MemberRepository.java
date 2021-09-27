@@ -6,4 +6,3 @@ import smu.earthranger.domain.Member;
 public interface MemberRepository extends JpaRepository<Member, Long> {
         Member findMemberByEmail(String email);
 }
-
