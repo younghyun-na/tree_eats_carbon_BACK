@@ -36,7 +36,7 @@ public class MemberController {
     }
 
     // 회원 정보 수정
-    @PutMapping("member/update")
+    @PutMapping("/member/update")
     public ResponseEntity update(@RequestBody @Valid MemberUpdateDto memberUpdateDto, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal MemberDetails memberDetails) {
         memberService.update(memberUpdateDto,memberDetails);
         redirectAttributes.addAttribute("id", memberDetails.getMember().getId());
