@@ -11,8 +11,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-        Member findUserByEmail(String email);
-
+        Optional<Member> findMemberByEmail(String email);
         Optional<Member> findUserByName(String name);
 
         Page<Member> findAll(Pageable pageable);
