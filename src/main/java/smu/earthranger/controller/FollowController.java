@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import smu.earthranger.dto.ResponseMessage;
 import smu.earthranger.dto.follow.FollowResponseDto;
+import smu.earthranger.jwt.SecurityUtil;
 import smu.earthranger.service.FollowService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +20,6 @@ import java.util.List;
 public class FollowController {
 
     private final FollowService followService;
-    private Long userId = 1L;
 
     //follow/search/?option=0&value="semi"
     @GetMapping("/search")
@@ -26,27 +27,30 @@ public class FollowController {
                                            @RequestParam("option") int option,
                                            @RequestParam("value") String value){
 
-        FollowResponseDto dto = followService.findFollowerByOption(userId, option, value);
+        Optional<Long> userId = SecurityUtil.getCurrentUserId();
+        FollowResponseDto dto = followService.findFollowerByOption(userId.get(), option, value);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping
     public ResponseEntity<?> searchFollowList(){
-        List<FollowResponseDto> followList = followService.getFollowList(userId);
+        Optional<Long> userId = SecurityUtil.getCurrentUserId();
+        List<FollowResponseDto> followList = followService.getFollowList(userId.get());
         return ResponseEntity.ok(followList);
     }
 
 
     @PostMapping("/{memberId}")
     public ResponseEntity<ResponseMessage> addFollower(@PathVariable("memberId") Long memberId){
-
-        followService.followMember(userId, memberId);
+        Optional<Long> userId = SecurityUtil.getCurrentUserId();
+        followService.followMember(userId.get(), memberId);
         return ResponseEntity.ok(new ResponseMessage(HttpStatus.CREATED, "ok"));
     }
 
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResponseMessage> deleteFollower(@PathVariable("memberId") Long memberId){
-        followService.unfollowMember(userId, memberId);
+        Optional<Long> userId = SecurityUtil.getCurrentUserId();
+        followService.unfollowMember(userId.get(), memberId);
         return ResponseEntity.ok(new ResponseMessage(HttpStatus.NO_CONTENT, "ok"));
     }
 
