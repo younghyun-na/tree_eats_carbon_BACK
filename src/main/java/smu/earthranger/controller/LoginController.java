@@ -1,27 +1,43 @@
 package smu.earthranger.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import smu.earthranger.dto.ResponseMessage;
+import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
 import smu.earthranger.service.MemberService;
 
 import javax.validation.Valid;
 
-@Controller
+
+@Slf4j
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class LoginController {
 
     private final MemberService memberService;
 
-    //회원가입
     @PostMapping("/signup")
-    public String signup(@Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+    public ResponseEntity<ResponseMessage> signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
         memberService.save(memberSignupDto);
-        return "redirect:/login";
+        if(bindingResult.hasErrors()) {
+            log.info("검증 오류 발생 errors={}", bindingResult);
+        }
+        return ResponseEntity.ok(new ResponseMessage(HttpStatus.CREATED, "Registered successfully!"));
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody MemberLoginDto memberLoginDto){
+        return memberService.getToken(memberLoginDto);
     }
 
 }

@@ -1,16 +1,21 @@
 package smu.earthranger.domain;
 
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import smu.earthranger.domain.carbon.Carbon;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity{
+public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -41,7 +46,8 @@ public class Member extends BaseTimeEntity{
     @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
 
-    //==업데이트 메서드==//
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();   //member_roles table 생성되면서 오류남
 
     public void update(String email, String name,String password) {
         this.email = email;
@@ -64,10 +70,45 @@ public class Member extends BaseTimeEntity{
     }
 
     @Builder
-    private Member(String email, String name, String password, double totalReduction) {
+    private Member(String email, String name, String password, List<String> roles,  double totalReduction) {
         this.email = email;
         this.name = name;
         this.password = password;
+        this.roles = roles;
         this.totalReduction = totalReduction;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+
 }

@@ -8,6 +8,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 
+@Builder
 @Data
 @AllArgsConstructor
 public class MemberSignupDto {
@@ -23,7 +24,8 @@ public class MemberSignupDto {
 
     @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
     @NotBlank(message = "비밀번호는 필수 항목입니다.")
-    @Pattern(regexp="^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,}$",
-            message = "비밀번호는 영문, 숫자, 특수문자가 적어도 1개 이상씩 포함된 8자 이상의 비밀번호여야 합니다.")
     private String password;
+
+    public MemberSignupDto() {
+    }
 }
