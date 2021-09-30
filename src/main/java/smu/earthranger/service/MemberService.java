@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
+import smu.earthranger.dto.user.TokenDto;
 import smu.earthranger.jwt.JwtTokenProvider;
 import smu.earthranger.repository.MemberRepository;
 
@@ -41,7 +42,7 @@ public class MemberService {
     }
 
     //email, password
-    public String getToken(MemberLoginDto memberLoginDto){
+    public TokenDto getToken(MemberLoginDto memberLoginDto){
         Member member = memberRepository.findMemberByEmail(memberLoginDto.getEmail())
                 .orElseThrow(() -> new IllegalStateException("가입되지 않은 이메일 입니다."));
 
@@ -49,7 +50,9 @@ public class MemberService {
             throw new IllegalStateException("잘못된 비밀번호 입니다.");
         }
 
-        return jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
+        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
+
+        return new TokenDto(token);
     }
 
 }
