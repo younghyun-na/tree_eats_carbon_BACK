@@ -10,8 +10,8 @@ import smu.earthranger.dto.follow.FollowResponseDto;
 import smu.earthranger.repository.FollowRepository;
 import smu.earthranger.repository.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,11 +26,11 @@ public class FollowService {
      * 이웃 추가
      */
     @Transactional
-    public void followMember(Long fromId, String toName){
+    public void followMember(Long fromId, Long toId){
         Member fromMember = memberRepository.findById(fromId).orElseThrow(() ->
                 new IllegalStateException("Non exist member."));
 
-        Member toMember = memberRepository.findUserByName(toName).orElseThrow(() ->
+        Member toMember = memberRepository.findById(toId).orElseThrow(() ->
                 new IllegalStateException("Non exist member."));
 
 
@@ -38,9 +38,9 @@ public class FollowService {
             throw new IllegalStateException("Follow rejected.");
         }
 
-        boolean isFollow = followRepository.findByFromMember_Id(fromId)
+        boolean isFollow = followRepository.findByFromMember(fromMember)
                 .stream()
-                .filter(s -> s.getToMember().getName().equals(toName))
+                .filter(s -> s.getToMember().getId().equals(toId))
                 .findFirst().isEmpty();
 
         if(!isFollow) throw new IllegalStateException("Already Followed.");
@@ -51,16 +51,10 @@ public class FollowService {
                 .toMember(toMember)
                 .build()
                 .toEntity());
-
-        //follower, following count 업데이트하기
-        int followingCount = followRepository.findByFromMember_Id(fromId).size();
-        int followerCount = followRepository.findByToMember_Id(toMember.getId()).size();
-
-        fromMember.updateFollowCount(followingCount, followerCount);
     }
 
     /**
-     * 이웃 삭제
+     * 이웃 삭제 : 팔로잉, 팔로우 카운트도 다시 업데이트
      */
     @Transactional
     public void unfollowMember(Long fromId, Long toId){
@@ -71,25 +65,26 @@ public class FollowService {
                 new IllegalStateException("Non exist member."));
 
         followRepository.deleteByFromMemberAndToMember(fromMem, toMem);
-
     }
 
     /**
      * 이웃 검색_이름 :0, 이메일 :1 : Follow 대상
+     * 방법 1 : 옵션으로 구분
+     * 방법 2 : 쿼리로 name, email 받아서 컨트롤러에서 따로 처리
      */
-    public FollowResponseDto findFollowerByOption(Long id, String optionValue, int option){
+    public FollowResponseDto findFollowerByOption(Long id, int option, String optionValue){
 
         FollowResponseDto followDto = null;
 
         if(option == 0){
             Follow follow  = followRepository.findByFromMember_IdAndToMember_Name(id, optionValue).orElseThrow(() ->
                     new IllegalStateException("Non exist Member."));
-            followDto = getFollowResponseDto(follow);
+            followDto = FollowResponseDto.builder().follow(follow).build();
 
         }else if(option == 1){
             Follow follow = followRepository.findByFromMember_IdAndToMember_Email(id, optionValue).orElseThrow(() ->
                     new IllegalStateException("Non exist Member"));
-            followDto = getFollowResponseDto(follow);
+            followDto = FollowResponseDto.builder().follow(follow).build();
         }
         return followDto;
     }
@@ -100,28 +95,14 @@ public class FollowService {
 
     public List<FollowResponseDto> getFollowList(Long fromId){
 
-        List<Follow> followList = followRepository.findByFromMember_Id(fromId);
-        if(followList.isEmpty()){
-            throw new IllegalStateException("Follow list does not exist.");
-        }
-        
-        List<FollowResponseDto> followResponseList = new ArrayList<>();
+        Member member = memberRepository.findById(fromId).orElseThrow(() ->
+                new IllegalStateException("Non exist Member."));
 
-        for(Follow follow : followList){
-            FollowResponseDto dto = getFollowResponseDto(follow);
-            followResponseList.add(dto);
-        }
-        return followResponseList;
-    }
+        List<Follow> followList = followRepository.findByFromMember(member);
 
-    private FollowResponseDto getFollowResponseDto(Follow follow){
-        Member member = follow.getToMember();
-
-        return FollowResponseDto.builder()
-                .name(member.getName())
-                .followingCount(member.getFollowingCount())
-                .followerCount(member.getFollowerCount())
-                .build();
+        return followList.stream()
+                .map(FollowResponseDto::new)
+                .collect(Collectors.toList());
     }
 
 }

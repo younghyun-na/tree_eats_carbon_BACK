@@ -39,12 +39,7 @@ class CarbonServiceTest {
     @Test
     @Rollback(value = false)
     public void getInfo() throws Exception{
-        //given
-        for (int i = 1; i < 11; i++) {
-            Info build = Info.builder()
-                    .content("일단 테스트용" + i).build();
-            infoRepository.save(build);
-        }
+
 
         CarbonRequestDto carbon1 = getCarbon(1, 234.3);
         CarbonRequestDto carbon2 = getCarbon(2, 244.3);

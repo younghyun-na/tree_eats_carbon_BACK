@@ -1,44 +1,58 @@
 package smu.earthranger.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
+import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
-import smu.earthranger.repository.FollowRepository;
+import smu.earthranger.dto.user.TokenDto;
+import smu.earthranger.jwt.JwtTokenProvider;
 import smu.earthranger.repository.MemberRepository;
 
+import java.util.Collections;
+
+@Slf4j
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private FollowRepository followRepository;
-
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 회원가입
      */
     @Transactional
-    public Member save(MemberSignupDto memberSignupDto) {
+    public Long save(MemberSignupDto memberSignupDto) {
 
         // 중복 회원 검증
-        if(memberRepository.findUserByEmail(memberSignupDto.getEmail()) != null)
+        if(memberRepository.findMemberByEmail(memberSignupDto.getEmail()).isPresent())
             throw new IllegalStateException("이미 존재하는 회원입니다.");
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return memberRepository.save(Member.builder()
                 .email(memberSignupDto.getEmail())
-                .password(encoder.encode(memberSignupDto.getPassword()))
+                .password(passwordEncoder.encode(memberSignupDto.getPassword()))
                 .name(memberSignupDto.getName())
-                .build());
+                .roles(Collections.singletonList("ROLE_USER")) // 최초 가입시 USER 로 설정
+                .build()).getId();
     }
 
+    //email, password
+    public TokenDto getToken(MemberLoginDto memberLoginDto){
+        Member member = memberRepository.findMemberByEmail(memberLoginDto.getEmail())
+                .orElseThrow(() -> new IllegalStateException("가입되지 않은 이메일 입니다."));
 
-    /**
-     * 회원 정보 수정
-     */
+        if(!passwordEncoder.matches(memberLoginDto.getPassword(), member.getPassword())){
+            throw new IllegalStateException("잘못된 비밀번호 입니다.");
+        }
+
+        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
+
+        return new TokenDto(token);
+    }
+
 }

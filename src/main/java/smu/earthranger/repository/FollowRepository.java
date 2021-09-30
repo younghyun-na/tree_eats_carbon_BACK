@@ -19,13 +19,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     Optional<Follow> findByFromMember_IdAndToMember_Email(Long id, String email);
 
-    List<Follow> findByFromMember_Id(Long id);
-
-    List<Follow> findByToMember_Id(Long id);
+    List<Follow> findByFromMember(Member member);
 
     List<Follow> findFollowByFromMember(Member member);
 
     @Transactional
     void deleteByFromMemberAndToMember(Member fromMember, Member toMember);
-
 }
