@@ -22,4 +22,5 @@ public class Info {
     public Info(String content) {
         this.content = content;
     }
+
 }

@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import smu.earthranger.dto.user.MemberRankingResponseDto;
+import smu.earthranger.jwt.SecurityUtil;
 import smu.earthranger.service.RankService;
+
+import java.util.Optional;
 
 
 @RestController
@@ -20,12 +23,13 @@ import smu.earthranger.service.RankService;
 public class RankController {
 
     private final RankService rankService;
-    private Long userId = 1L; //임시
+
 
     @GetMapping
     public ResponseEntity<?> getRank(@RequestParam String user,
                                      @PageableDefault(size = 20, sort = "totalReduction", direction = Sort.Direction.DESC) Pageable pageable){
-        Page<MemberRankingResponseDto> dto = rankService.getByPermission(userId, user, pageable);
+        Optional<Long> userId = SecurityUtil.getCurrentUserId();
+        Page<MemberRankingResponseDto> dto = rankService.getByPermission(userId.get(), user, pageable);
         return ResponseEntity.ok(dto);
     }
 

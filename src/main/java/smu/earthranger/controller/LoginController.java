@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import smu.earthranger.dto.ResponseMessage;
 import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
+import smu.earthranger.dto.user.TokenDto;
 import smu.earthranger.service.MemberService;
 
 import javax.validation.Valid;
@@ -36,7 +37,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody MemberLoginDto memberLoginDto){
+    public TokenDto login(@RequestBody MemberLoginDto memberLoginDto){
         return memberService.getToken(memberLoginDto);
     }
 
