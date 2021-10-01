@@ -43,6 +43,10 @@ public class MemberService {
                 .build()).getId();
     }
 
+    public Member findMemberById(Long userId){
+        return memberRepository.findById(userId).orElseThrow(() ->
+                new IllegalStateException("존재하지 않는 회원입니다."));
+    }
     //email, password
     public TokenDto getToken(MemberLoginDto memberLoginDto){
         Member member = memberRepository.findMemberByEmail(memberLoginDto.getEmail())

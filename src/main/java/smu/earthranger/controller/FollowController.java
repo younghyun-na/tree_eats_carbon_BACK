@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import smu.earthranger.dto.ResponseMessage;
+import smu.earthranger.dto.follow.FollowMemberResponseDto;
 import smu.earthranger.dto.follow.FollowList;
 import smu.earthranger.dto.follow.FollowResponseDto;
 import smu.earthranger.jwt.SecurityUtil;
@@ -23,9 +24,9 @@ public class FollowController {
 
     //follow/search/?name=semi
     @GetMapping("/search")
-    public ResponseEntity<FollowResponseDto> searchFollower(@RequestParam("name") String name){
+    public ResponseEntity<FollowMemberResponseDto> searchFollower(@RequestParam("name") String name){
         Optional<Long> userId = SecurityUtil.getCurrentUserId();
-        FollowResponseDto dto = followService.findFollowerByName(userId.get(), name);
+        FollowMemberResponseDto dto = followService.findFollowerByName(userId.get(), name);
         return ResponseEntity.ok(dto);
     }
 
