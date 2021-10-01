@@ -11,18 +11,20 @@ public class CarbonDto {
     private int treeLevel;
     private int treeCount;
     private double totalReduction;
+    private double levelReduction;
 
     @Builder
-    public CarbonDto(int treeLevel, int treeCount, double totalReduction) {
+    public CarbonDto(int treeLevel, int treeCount, double totalReduction, double levelReduction) {
         this.treeLevel = treeLevel;
         this.treeCount = treeCount;
         this.totalReduction = totalReduction;
+        this.levelReduction = levelReduction;
     }
 
-    public  CarbonDto(Member member){
+    public CarbonDto(Member member){
         this.treeLevel = member.getTreeLevel();
         this.treeCount = member.getTreeCount();
         this.totalReduction = member.getTotalReduction();
+        this.levelReduction = member.getLevelReduction();
     }
-
 }
