@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import smu.earthranger.domain.carbon.Carbon;
+import smu.earthranger.dto.carbon.CarbonDto;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
         this.name = name;
         this.password = password;
         this.roles = roles;
+        this.treeLevel = 1;
         this.totalReduction = totalReduction;
     }
 

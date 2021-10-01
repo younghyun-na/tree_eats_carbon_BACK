@@ -46,8 +46,8 @@ class CarbonServiceTest {
         CarbonRequestDto carbon3 = getCarbon(2, 244.3);
 
 
-        Member member = getMember("te212t","tgkfe2@test.com","dkdkkdk23",0);
-        Member member2 = getMember("te221t2","tq12@test.com","ff2",0);
+        Member member = getMember("te2122312t","te2@test.com","dkdkkdk23",0);
+        Member member2 = getMember("te2212222t2","td@test.com","ff2",0);
         Member save = memberRepository.save(member);
         memberRepository.save(member2);
 
