@@ -36,11 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().
-                withUser("user").password("{noop}password1").roles("USER")
-                .and()
-                .withUser("admin").password("{noop}password2").roles("ADMIN");
+                withUser("user").password("{noop}password1").roles("USER");
     }
 
+    //role should not start with 'ROLE_' since it is automatically inserted. Got 'ROLE_USER'
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -52,6 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/carbon").permitAll()  //전체 열람
                 .antMatchers("/member/signup").permitAll()
                 .antMatchers("/member/login").permitAll()
+                .antMatchers("/api/test/all").permitAll()
+                .antMatchers("/follow").hasRole("USER")
+                .antMatchers("/rank").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
