@@ -48,8 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/carbon").permitAll()  //전체 열람
-                .antMatchers("/member").permitAll()
+                .antMatchers("/member").permitAll()//전체 열람
                 .antMatchers("/member/signup","/member/login").permitAll()
                 .antMatchers("/api/test/all").permitAll()
                 .anyRequest().authenticated()
