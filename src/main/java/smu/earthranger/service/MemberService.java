@@ -2,12 +2,14 @@ package smu.earthranger.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
+import smu.earthranger.dto.member.MemberUpdateDto;
 import smu.earthranger.dto.user.TokenDto;
 import smu.earthranger.jwt.JwtTokenProvider;
 import smu.earthranger.repository.MemberRepository;
@@ -25,9 +27,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    /**
-     * 회원가입
-     */
+    // 회원가입
     @Transactional
     public Long save(MemberSignupDto memberSignupDto) {
 
@@ -76,4 +76,21 @@ public class MemberService {
         return returnJson;
     }
 
+    // 회원 정보 수정
+    @Transactional
+    public void update(MemberUpdateDto memberUpdateDto, Member member){
+
+        Member updateMember = memberRepository.findMemberByEmail(member.getMember().getEmail())
+                .orElseThrow(() -> new IllegalStateException("없는 회원입니다."));
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        updateMember.update(encoder.encode(memberUpdateDto.getPassword()),
+                memberUpdateDto.getName(),
+                memberUpdateDto.getPassword()
+        );
+
+        //정보 변경
+        member.updateMember(member);
+    }
 }
