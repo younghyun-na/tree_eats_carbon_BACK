@@ -23,3 +23,6 @@ spring:
               sql:
                 BasicBinder: TRACE
 
+
+server:
+  port: 7000
