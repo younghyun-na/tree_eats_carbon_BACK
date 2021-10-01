@@ -9,6 +9,7 @@ import smu.earthranger.domain.Info;
 import smu.earthranger.domain.carbon.Co2;
 import smu.earthranger.domain.carbon.Level;
 import smu.earthranger.domain.Member;
+import smu.earthranger.dto.carbon.CarbonDto;
 import smu.earthranger.dto.carbon.CarbonRequestDto;
 import smu.earthranger.dto.carbon.CarbonResponseInfoDto;
 import smu.earthranger.repository.CarbonRepository;
@@ -30,28 +31,33 @@ public class CarbonService {
 
     //탄소 발자국 계산 -> 일정 수준 넘어서면 레벨업
     @Transactional
-    public Carbon saveCarbon(Long memberId,CarbonRequestDto dto){
-
-        double distance = dto.getDistance();
-        int transport = dto.getTransport();
-
-        double result = calculateCarbon(distance, transport);
-        double carCo2 = distance * Co2.carCo2.getEmission(); //자동차를 탔다면 방출할 이산화탄소 - 실제 이산화 탄소
-        carCo2 = Math.round(carCo2*100)/100.0;
-
-        double reduction = carCo2 - result;
+    public CarbonDto saveCarbon(Long memberId,CarbonRequestDto dto){
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new IllegalStateException("존재하지 않는 회원"));
 
+        double distance = dto.getDistance();
+        int transport = dto.getTransport();
+        double result = calculateCarbon(distance, transport); //이산화탄소 방출량
+        double carCo2 = distance * Co2.carCo2.getEmission(); //자동차를 탔다면 방출할 이산화탄소
+        carCo2 = getDouble(carCo2);
+
+        double reduction = carCo2 - result; //저감량
+        reduction = getDouble(reduction);
+
         member.updateTotal(reduction);
+
         Carbon carbon = dto.toEntity(member, result, reduction);
-        Carbon savedCarbon = carbonRepository.save(carbon);
+        carbonRepository.save(carbon);
 
         //저장 후 유저.누적 카본 가져옴 -> level up 누적 감소량
-        levelUp(member.getTotalReduction(),member);
+        levelUp(member.getLevelReduction(),member);
 
-        return savedCarbon;
+        return new CarbonDto(member);
+    }
+
+    private double getDouble(double reduction) {
+        return Math.round(reduction * 100) / 100.0;
     }
 
     public CarbonResponseInfoDto getInfo(long memberId){
@@ -60,7 +66,7 @@ public class CarbonService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new IllegalStateException("존재하지 않는 회원"));
 
-        String treeCnt = getTreeCnt(member);//오늘 방출량에 따른 필요한 나무 수
+        String treeCnt = getTreeCnt(member);//방출량에 따른 필요한 나무 수
         CarbonResponseInfoDto dto = getDto(treeCnt, info);
 
         return dto;
@@ -115,7 +121,7 @@ public class CarbonService {
         else if(transport == 2){
             result = distance * Co2.busCo2.getEmission();
         }
-        return Math.round(result*100)/100.0;
+        return getDouble(result);
     }
 
     private void levelUp(double reduction, Member member){
@@ -134,6 +140,5 @@ public class CarbonService {
     private double gToT(double gram){
         return gram * 0.000001;
     }
-
 
 }

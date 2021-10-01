@@ -13,7 +13,8 @@ import smu.earthranger.jwt.JwtTokenProvider;
 import smu.earthranger.repository.MemberRepository;
 
 import java.util.Collections;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -58,6 +59,21 @@ public class MemberService {
         String token = jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
 
         return new TokenDto(token);
+    }
+
+    //중복검사
+    public Map<String, Boolean> checkName(String name) {//닉네임 중복 검사
+        Map<String, Boolean> returnJson = new HashMap<>();
+        Member member = memberRepository.findMemberByName(name)
+                .orElse(null);
+
+        if(member == null){ //중복회원 없으면
+            returnJson.put("message", true);
+        }
+        else {
+            returnJson.put("message", false);
+        }
+        return returnJson;
     }
 
 }
