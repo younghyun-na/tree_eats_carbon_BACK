@@ -72,21 +72,12 @@ public class FollowService {
      * 방법 1 : 옵션으로 구분
      * 방법 2 : 쿼리로 name, email 받아서 컨트롤러에서 따로 처리
      */
-    public FollowResponseDto findFollowerByOption(Long id, int option, String optionValue){
+    public FollowResponseDto findFollowerByName(Long id, String followName){
 
-        FollowResponseDto followDto = null;
+        Follow follow  = followRepository.findByFromMember_IdAndToMember_Name(id, followName).orElseThrow(() ->
+                new IllegalStateException("Non exist Member."));
+        return FollowResponseDto.builder().follow(follow).build();
 
-        if(option == 0){
-            Follow follow  = followRepository.findByFromMember_IdAndToMember_Name(id, optionValue).orElseThrow(() ->
-                    new IllegalStateException("Non exist Member."));
-            followDto = FollowResponseDto.builder().follow(follow).build();
-
-        }else if(option == 1){
-            Follow follow = followRepository.findByFromMember_IdAndToMember_Email(id, optionValue).orElseThrow(() ->
-                    new IllegalStateException("Non exist Member"));
-            followDto = FollowResponseDto.builder().follow(follow).build();
-        }
-        return followDto;
     }
 
     /**
