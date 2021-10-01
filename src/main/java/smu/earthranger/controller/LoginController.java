@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import smu.earthranger.dto.ResponseMessage;
 import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
@@ -39,6 +36,12 @@ public class LoginController {
     @PostMapping("/login")
     public TokenDto login(@RequestBody MemberLoginDto memberLoginDto){
         return memberService.getToken(memberLoginDto);
+    }
+
+    //중복확인
+    @GetMapping
+    public ResponseEntity<?> checkName(@RequestParam("name") String name){
+        return new ResponseEntity<>(memberService.checkName(name), HttpStatus.OK);
     }
 
 }

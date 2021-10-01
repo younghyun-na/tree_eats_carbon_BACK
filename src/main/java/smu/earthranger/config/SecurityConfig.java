@@ -48,12 +48,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/carbon").permitAll()  //전체 열람
-                .antMatchers("/member/signup").permitAll()
-                .antMatchers("/member/login").permitAll()
+                .antMatchers("/member").permitAll()//전체 열람
+                .antMatchers("/member/signup","/member/login").permitAll()
                 .antMatchers("/api/test/all").permitAll()
-                .antMatchers("/follow").hasRole("USER")
-                .antMatchers("/rank").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
