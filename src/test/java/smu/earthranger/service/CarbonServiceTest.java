@@ -26,6 +26,7 @@ class CarbonServiceTest {
     @Autowired InfoRepository infoRepository;
     @Autowired MemberRepository memberRepository;
     @Autowired RankService rankService;
+    @Autowired InfoService infoService;
 
     @Test
     public void saveCarbon() throws Exception{
@@ -56,7 +57,7 @@ class CarbonServiceTest {
         carbonService.saveCarbon(save.getId(),carbon3);
 
         //when
-        CarbonResponseInfoDto info = carbonService.getInfo(save.getId());
+        CarbonResponseInfoDto info = infoService.getInfo(save.getId());
 
         //then
         System.out.println(info);
