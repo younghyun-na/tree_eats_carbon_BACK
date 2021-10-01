@@ -110,6 +110,6 @@ class CarbonServiceTest {
         for (MemberRankingResponseDto userRankingResponseDto : all) {
             System.out.println(userRankingResponseDto);
         }
-
     }
+
 }
