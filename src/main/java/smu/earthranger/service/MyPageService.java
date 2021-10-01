@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.user.MyPageResponseDto;
-import smu.earthranger.repository.FollowRepository;
 import smu.earthranger.repository.MemberRepository;
 
 @Service

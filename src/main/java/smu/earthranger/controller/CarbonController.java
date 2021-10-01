@@ -1,15 +1,14 @@
 package smu.earthranger.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import smu.earthranger.dto.ResponseMessage;
 import smu.earthranger.dto.carbon.CarbonDto;
 import smu.earthranger.dto.carbon.CarbonRequestDto;
 import smu.earthranger.dto.carbon.CarbonResponseInfoDto;
 import smu.earthranger.jwt.SecurityUtil;
 import smu.earthranger.service.CarbonService;
+import smu.earthranger.service.InfoService;
 
 import java.util.Optional;
 
@@ -19,11 +18,12 @@ import java.util.Optional;
 public class CarbonController {
 
     private final CarbonService carbonService;
+    private final InfoService infoService;
 
     @GetMapping
     public ResponseEntity<CarbonResponseInfoDto> getInfo(){
         Optional<Long> userId = SecurityUtil.getCurrentUserId();
-        CarbonResponseInfoDto info = carbonService.getInfo(userId.get());
+        CarbonResponseInfoDto info = infoService.getInfo(userId.get());
         return ResponseEntity.ok(info);
     }
 
