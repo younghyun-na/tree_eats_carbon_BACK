@@ -22,5 +22,4 @@ spring:
             descriptor:
               sql:
                 BasicBinder: TRACE
-server:
-  port: 5000
+

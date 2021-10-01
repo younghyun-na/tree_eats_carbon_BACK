@@ -21,14 +21,12 @@ public class FollowController {
 
     private final FollowService followService;
 
-    //follow/search/?option=0&value="semi"
+    //follow/search/?name=semi
     @GetMapping("/search")
-    public ResponseEntity<FollowResponseDto> searchFollower(
-                                           @RequestParam("option") int option,
-                                           @RequestParam("value") String value){
+    public ResponseEntity<FollowResponseDto> searchFollower(@RequestParam("name") String name){
 
         Optional<Long> userId = SecurityUtil.getCurrentUserId();
-        FollowResponseDto dto = followService.findFollowerByOption(userId.get(), option, value);
+        FollowResponseDto dto = followService.findFollowerByName(userId.get(), name);
         return ResponseEntity.ok(dto);
     }
 
