@@ -27,6 +27,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    
     // 회원 정보 수정
     @PatchMapping("/mypage")
     public ResponseEntity<ResponseMessage> update(@RequestBody @Valid MemberUpdateDto memberUpdateDto, Member member){
