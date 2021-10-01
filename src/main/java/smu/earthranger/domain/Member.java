@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import smu.earthranger.domain.carbon.Carbon;
+import smu.earthranger.domain.carbon.Level;
 import smu.earthranger.dto.carbon.CarbonDto;
 
 import javax.persistence.*;
@@ -38,6 +39,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private double totalReduction;
 
+    private double levelReduction;
+
     @OneToMany(mappedBy = "member")
     private List<Carbon> carbon = new ArrayList<>();
 
@@ -64,10 +67,12 @@ public class Member extends BaseTimeEntity implements UserDetails {
     public void updateTreeCnt(int treeLevel){
         this.treeLevel = treeLevel;
         this.treeCount += 1;
+        this.levelReduction -= Level.Lv5.level();
     }
 
     public void updateTotal(double reduction){
         this.totalReduction += reduction;
+        this.levelReduction += reduction;
     }
 
     @Builder

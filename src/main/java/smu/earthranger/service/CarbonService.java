@@ -51,7 +51,7 @@ public class CarbonService {
         carbonRepository.save(carbon);
 
         //저장 후 유저.누적 카본 가져옴 -> level up 누적 감소량
-        levelUp(member.getTotalReduction(),member);
+        levelUp(member.getLevelReduction(),member);
 
         return new CarbonDto(member);
     }
