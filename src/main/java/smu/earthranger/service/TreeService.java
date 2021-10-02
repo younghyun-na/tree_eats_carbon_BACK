@@ -1,42 +1,46 @@
 package smu.earthranger.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
 import smu.earthranger.domain.carbon.Carbon;
 import smu.earthranger.dto.tree.TreeMemberResponseDto;
 import smu.earthranger.dto.tree.TreeResponseDto;
+import smu.earthranger.repository.CarbonRepository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class TreeService {
 
     private final MemberService memberService;
+    private final CarbonRepository carbonRepository;
 
     //본인 식물 조회
     @Transactional
     public TreeResponseDto findSelfTree(Long userId){
         Member member = memberService.findMemberById(userId);
+        List<Carbon> todayCarbonList = carbonRepository.findByMemberIdAndCreatedDate(userId, LocalDate.now());
 
         return TreeResponseDto.builder()
                 .treeCount(member.getTreeCount())
                 .treeLevel(member.getTreeLevel())
-                .carbon(extractOneDayCo2(member.getCarbon())).build();
+                .levelReduction(member.getLevelReduction())
+                .carbon(extractOneDayCo2(todayCarbonList)).build();
     }
 
-    public Map<LocalDate, Double> extractOneDayCo2(List<Carbon> carbonList){
+    public double extractOneDayCo2(List<Carbon> carbonList){
 
-        Map<LocalDate, Double> responseMap = new HashMap<>();
+        double totalReduction = 0.0;
+
         for(Carbon carbon : carbonList){
-            responseMap.put(carbon.getCreatedDate(), carbon.getEmission());
+            totalReduction += carbon.getReduction();
         }
-        return responseMap;
+        return totalReduction;
     }
 
     //이웃 식물 조회
