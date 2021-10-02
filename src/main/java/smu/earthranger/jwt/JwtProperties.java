@@ -6,5 +6,5 @@ public class JwtProperties {
     public static final String SECRET_KEY = "webfirewood";
 
     //토큰 유효시간(30분 설정)
-    public static final Long EXPIRATION_TIME = 30*60*1000L;
+    public static final Long EXPIRATION_TIME = 60*60*1000L;
 }
