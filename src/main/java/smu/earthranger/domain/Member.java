@@ -41,7 +41,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private double levelReduction;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Carbon> carbon = new ArrayList<>();
 
     @OneToMany(mappedBy = "fromMember", cascade = CascadeType.ALL, orphanRemoval = true)
