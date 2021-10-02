@@ -41,14 +41,14 @@ public class FollowController {
     public ResponseEntity<ResponseMessage> addFollower(@PathVariable("memberId") Long memberId){
         Optional<Long> userId = SecurityUtil.getCurrentUserId();
         followService.followMember(userId.get(), memberId);
-        return ResponseEntity.ok(new ResponseMessage(HttpStatus.CREATED, "ok"));
+        return ResponseEntity.ok(new ResponseMessage(HttpStatus.CREATED, "follow success"));
     }
 
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResponseMessage> deleteFollower(@PathVariable("memberId") Long memberId){
         Optional<Long> userId = SecurityUtil.getCurrentUserId();
         followService.unfollowMember(userId.get(), memberId);
-        return ResponseEntity.ok(new ResponseMessage(HttpStatus.NO_CONTENT, "ok"));
+        return ResponseEntity.ok(new ResponseMessage(HttpStatus.NO_CONTENT, "unfollow success"));
     }
 
 }

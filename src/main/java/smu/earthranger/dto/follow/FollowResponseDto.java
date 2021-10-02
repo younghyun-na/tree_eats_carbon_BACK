@@ -11,9 +11,7 @@ public class FollowResponseDto {
     private Long id;
     private String name;
     private int followerCount;
-    private int followingCount;
     private int treeCount;
-    private int treeLevel;
 
     @Builder
     public FollowResponseDto(Follow follow){
@@ -22,9 +20,15 @@ public class FollowResponseDto {
         this.id = toMem.getId();
         this.name = toMem.getName();
         this.followerCount = toMem.getFollowers().size();
-        this.followingCount = toMem.getFollowings().size();
         this.treeCount = toMem.getTreeCount();
-        this.treeLevel = toMem.getTreeLevel();
+    }
+
+    @Builder
+    public FollowResponseDto(Member member){
+        this.id = member.getId();
+        this.name = member.getName();
+        this.treeCount = member.getTreeCount();
+        this.followerCount = member.getFollowers().size();
     }
 
 }
