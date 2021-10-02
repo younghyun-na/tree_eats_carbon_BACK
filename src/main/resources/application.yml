@@ -26,5 +26,3 @@ spring:
                 BasicBinder: TRACE
 
 
-server:
-  port: 6000
