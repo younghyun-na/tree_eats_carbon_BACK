@@ -41,7 +41,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private double levelReduction;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Carbon> carbon = new ArrayList<>();
 
     @OneToMany(mappedBy = "fromMember", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -53,10 +53,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();   //member_roles table 생성되면서 오류남
 
-    public void update(String email, String name,String password) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
+
+    public void updateMember(String name){
+        this.name= name;
     }
 
     public void updateTree(int treeLevel){

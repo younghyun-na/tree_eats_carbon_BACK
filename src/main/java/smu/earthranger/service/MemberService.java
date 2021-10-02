@@ -2,12 +2,14 @@ package smu.earthranger.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import smu.earthranger.domain.Member;
 import smu.earthranger.dto.member.MemberLoginDto;
 import smu.earthranger.dto.member.MemberSignupDto;
+import smu.earthranger.dto.member.MemberUpdateDto;
 import smu.earthranger.dto.user.TokenDto;
 import smu.earthranger.jwt.JwtTokenProvider;
 import smu.earthranger.repository.MemberRepository;
@@ -25,9 +27,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    /**
-     * 회원가입
-     */
+    // 회원가입
     @Transactional
     public Long save(MemberSignupDto memberSignupDto) {
 
@@ -43,6 +43,10 @@ public class MemberService {
                 .build()).getId();
     }
 
+    public Member findMemberById(Long userId){
+        return memberRepository.findById(userId).orElseThrow(() ->
+                new IllegalStateException("존재하지 않는 회원입니다."));
+    }
     //email, password
     public TokenDto getToken(MemberLoginDto memberLoginDto){
         Member member = memberRepository.findMemberByEmail(memberLoginDto.getEmail())
@@ -71,5 +75,6 @@ public class MemberService {
         }
         return returnJson;
     }
+
 
 }
