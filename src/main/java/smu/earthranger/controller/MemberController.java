@@ -46,11 +46,4 @@ public class MemberController {
         return new ResponseEntity<>(memberService.checkName(name), HttpStatus.OK);
     }
 
-    //로그아웃
-    @GetMapping(value = "/logout")
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return ResponseEntity.ok(new ResponseMessage(HttpStatus.NO_CONTENT, "ok"));
-    }
-
 }
