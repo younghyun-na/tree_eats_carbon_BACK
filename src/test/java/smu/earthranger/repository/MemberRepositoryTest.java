@@ -32,7 +32,7 @@ public class MemberRepositoryTest {
     }
 
     @Test
-    public void findUserByEmail_성공() {
+    public void findUserByEmail() {
         //given
         memberRepository.save(user);
 
